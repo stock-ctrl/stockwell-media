@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>Services — Stockwell Media Co</title>
+<title>Services · Stockwell Media Co</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <link rel="icon" href="../assets/logos/favicon.svg"/>
 <link rel="stylesheet" href="../styles.css"/>
@@ -41,7 +41,7 @@
   <div class="container">
     <span class="eyebrow">Services</span>
     <h1>Three ways to work with us.<br/>One studio behind all of them.</h1>
-    <p>It starts with an estimate tool on your website. It grows into automation and reporting. At the top, it becomes private infrastructure built for principals. Find the one that fits where you are.</p>
+    <p>It starts with software on your site, grows into automation and reporting, and at the top becomes private infrastructure built for principals. Find the one that fits where you are.</p>
     <div class="hero-ctas" style="margin-top:26px;">
       <a href="#estimate-tools" class="btn btn-ghost">Estimate tools</a>
       <a href="#automation" class="btn btn-ghost">Workflow &amp; reporting</a>
@@ -66,39 +66,51 @@
   </div>
 </section>
 
-<!-- THE FENCER -->
+<!-- THE FENCER (realistic estimator) -->
 <section class="section warm" style="padding-top:48px;padding-bottom:48px;">
-  <div class="container hero-grid" style="align-items:center;">
+  <div class="container hero-grid" style="align-items:start;">
     <div>
       <span class="eyebrow">Live now · The Fencer</span>
       <h2 style="font-family:var(--font-display);font-weight:600;font-size:clamp(28px,3.6vw,38px);line-height:1.08;letter-spacing:-0.025em;color:var(--sw-forest);margin-top:14px;">Draw the fence. See the price.</h2>
-      <p style="font-size:16.5px;line-height:1.62;color:rgba(13,20,16,0.68);margin-top:16px;max-width:34em;">Customers click to trace their fence line on a satellite map of their own yard, pick a material, and watch the price update by the linear foot — gates included. They arrive at the conversation already sold on the ballpark. You arrive ready to close.</p>
+      <p style="font-size:16.5px;line-height:1.62;color:rgba(13,20,16,0.68);margin-top:16px;max-width:34em;">Customers drop points to trace their fence on a satellite map of their own yard, pick a material, and watch the price update by the linear foot, gates included. They arrive at the conversation already sold on the ballpark. You arrive ready to close.</p>
       <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:22px;">
-        <li style="display:flex;gap:11px;font-size:15px;color:var(--sw-ink);"><span class="chk" data-lucide="check"></span>Click-to-draw on real satellite maps</li>
-        <li style="display:flex;gap:11px;font-size:15px;color:var(--sw-ink);"><span class="chk" data-lucide="check"></span>Pricing by material, length, and gates</li>
-        <li style="display:flex;gap:11px;font-size:15px;color:var(--sw-ink);"><span class="chk" data-lucide="check"></span>Lead lands with the measurements done</li>
+        <li style="display:flex;gap:11px;font-size:15px;color:var(--sw-ink);align-items:center;"><span class="chk" data-lucide="check"></span>Drop-a-point drawing on real satellite maps</li>
+        <li style="display:flex;gap:11px;font-size:15px;color:var(--sw-ink);align-items:center;"><span class="chk" data-lucide="check"></span>Pricing by material, length, and gates</li>
+        <li style="display:flex;gap:11px;font-size:15px;color:var(--sw-ink);align-items:center;"><span class="chk" data-lucide="check"></span>Lead lands with the measurements done</li>
       </ul>
+      <div style="margin-top:30px;">
+        <div class="est-mat-lbl">Pick a material</div>
+        <div class="est-swatches">
+          <button class="est-swatch on" data-price="$10,240" data-spec="6 ft cedar privacy" style="--sw:#8a5a3c;">Cedar</button>
+          <button class="est-swatch" data-price="$6,080" data-spec="6 ft chain-link" style="--sw:#9aa0a6;">Chain-link</button>
+          <button class="est-swatch" data-price="$15,200" data-spec="6 ft vinyl privacy" style="--sw:#e8e4da;">Vinyl</button>
+        </div>
+      </div>
     </div>
     <div class="mock mock-estimator">
-      <div class="est-map">
-        <div class="parcel"></div>
-        <div class="roof"></div>
-        <div class="drive"></div>
-        <svg class="est-poly" viewBox="0 0 200 150" preserveAspectRatio="none">
-          <polygon points="16,24 184,16 176,128 56,134 22,92"/>
-          <circle cx="16" cy="24" r="5"/>
-          <circle cx="184" cy="16" r="5"/>
-          <circle cx="176" cy="128" r="5"/>
-          <circle cx="56" cy="134" r="5"/>
-          <circle cx="22" cy="92" r="5"/>
-        </svg>
+      <div class="est-map est-map--photo" style="--est-img:url('https://images.unsplash.com/photo-1565402170291-8491f14678db?auto=format&fit=crop&w=1200&q=80');">
+        <div class="est-shade"></div>
+        <span class="est-addr"><span data-lucide="map-pin"></span>1442 Oak Ridge Dr</span>
         <span class="est-tag">The Fencer · live</span>
+        <svg class="est-poly2" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="45.2,8 74.1,11.6 72.5,35.3 34,77.1 23.5,43.4 29.9,35.1"/></svg>
+        <span class="est-vtx" style="left:45.2%;top:8%"></span>
+        <span class="est-vtx" style="left:74.1%;top:11.6%"></span>
+        <span class="est-vtx" style="left:72.5%;top:35.3%"></span>
+        <span class="est-vtx" style="left:34%;top:77.1%"></span>
+        <span class="est-vtx" style="left:23.5%;top:43.4%"></span>
+        <span class="est-vtx" style="left:29.9%;top:35.1%"></span>
+        <span class="est-len" style="left:59.7%;top:9.8%">90 ft</span>
+        <span class="est-len" style="left:75.3%;top:23.5%">46 ft</span>
+        <span class="est-len" style="left:54.3%;top:56.2%">145 ft</span>
+        <span class="est-len" style="left:26.8%;top:60.3%">73 ft</span>
+        <span class="est-len" style="left:22.7%;top:39.3%">26 ft</span>
+        <div class="est-zoom"><span>+</span><span>&minus;</span></div>
       </div>
       <div class="est-pricebar">
         <span class="lab">Instant estimate</span>
-        <span class="price">$8,420 <small>· 312 ft</small></span>
+        <span class="price" id="estPrice">$10,240 <small>· 380 ft</small></span>
       </div>
-      <div class="est-spec"><span>6 ft cedar privacy</span><span>2 gates</span><span>Material + labor</span></div>
+      <div class="est-spec"><span id="estSpec">6 ft cedar privacy</span><span>2 gates</span><span>Material + labor</span></div>
     </div>
   </div>
 </section>
@@ -107,12 +119,11 @@
 <section class="section" style="padding-top:48px;">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">More trades on the way</span>
       <h2>Same idea, built for your line of work.</h2>
       <p>The Fencer is the blueprint. If a customer can measure it or draw it, we can build a tool for it.</p>
     </div>
     <div class="tool-grid">
-      <div class="tool-tile"><span class="ico"><span data-lucide="fence"></span></span><h4>Fencing</h4><p>Draw the fence line on a map, price by material and length.</p><span class="built">Built — The Fencer</span></div>
+      <div class="tool-tile"><span class="ico"><span data-lucide="fence"></span></span><h4>Fencing</h4><p>Draw the fence line on a map, price by material and length.</p><span class="built">Built · The Fencer</span></div>
       <div class="tool-tile"><span class="ico"><span data-lucide="trees"></span></span><h4>Landscaping &amp; lawn</h4><p>Draw the lot or enter dimensions for an instant service quote.</p><span class="built soon">In development</span></div>
       <div class="tool-tile"><span class="ico"><span data-lucide="flower-2"></span></span><h4>Flower beds</h4><p>Draw the bed outline, pick materials, see the estimate.</p><span class="built soon">In development</span></div>
       <div class="tool-tile"><span class="ico"><span data-lucide="square"></span></span><h4>Concrete pours</h4><p>Draw the pour area, choose a finish, get square-foot pricing.</p><span class="built soon">In development</span></div>
@@ -136,25 +147,7 @@
         <h2 style="font-family:var(--font-display);font-weight:600;font-size:clamp(26px,3.2vw,38px);line-height:1.05;letter-spacing:-0.02em;color:var(--sw-cream);margin-top:8px;">Turn a working tool into a system you can run.</h2>
       </div>
     </div>
-    <p style="font-size:16.5px;line-height:1.62;color:rgba(244,239,228,0.74);max-width:46em;margin-top:8px;margin-bottom:44px;">For clients who already have a tool deployed and want more leverage. We connect it to automations and reporting so every lead is handled and you always know where things stand — without logging into anything.</p>
-
-    <div class="grid grid-3">
-      <div class="feature">
-        <div class="ico"><span data-lucide="repeat"></span></div>
-        <h3>Lead pipeline automations</h3>
-        <p>Automations that route, tag, and follow up on every lead the moment it arrives. Nothing gets dropped.</p>
-      </div>
-      <div class="feature">
-        <div class="ico"><span data-lucide="gauge"></span></div>
-        <h3>Performance dashboards</h3>
-        <p>Leads, quotes, close rate, and cost-per-job in one clear view — the numbers that tell you what's actually working.</p>
-      </div>
-      <div class="feature">
-        <div class="ico"><span data-lucide="send"></span></div>
-        <h3>Automated briefs</h3>
-        <p>A daily or weekly summary delivered so you can stay on top of the business without digging.</p>
-      </div>
-    </div>
+    <p style="font-size:16.5px;line-height:1.62;color:rgba(244,239,228,0.74);max-width:46em;margin-top:8px;margin-bottom:8px;">For clients who already have a tool deployed and want more leverage. We connect it to automations and reporting so every lead is handled and you always know where things stand, without logging into anything.</p>
 
     <div class="hero-grid" style="margin-top:40px;align-items:center;">
       <div class="mock mock--dark">
@@ -167,24 +160,30 @@
           <div class="mock-node"><span class="ic"><span data-lucide="trending-up"></span></span><div class="tx"><b>Close rate: 38%</b><span>Best month to date</span></div></div>
         </div>
       </div>
-      <div class="mock mock--dark">
-        <div class="mock-hd"><span class="t">Pipeline</span><span class="mock-live">Live</span></div>
-        <div class="mock-pipe">
-          <div class="mock-col">
-            <div class="ch" style="color:var(--sw-sage-light);"><i></i>New</div>
-            <div class="mock-card"><div class="nm">Miller fence</div><div class="sm">2m ago</div></div>
-            <div class="mock-card"><div class="nm">Reyes deck</div><div class="sm">14m ago</div></div>
-          </div>
-          <div class="mock-col">
-            <div class="ch" style="color:#cbb46a;"><i></i>Quoted</div>
-            <div class="mock-card"><div class="nm">Dwyer patio</div><div class="sm">$2,400</div></div>
-          </div>
-          <div class="mock-col">
-            <div class="ch" style="color:var(--sw-sage-light);"><i></i>Won</div>
-            <div class="mock-card"><div class="nm">Carter fence</div><div class="sm">Thu 9a</div></div>
-            <div class="mock-card"><div class="nm">Lane lawn</div><div class="sm">Fri 1p</div></div>
-          </div>
-        </div>
+      <div>
+        <ul class="auto-list">
+          <li>
+            <span class="ali"><span data-lucide="repeat"></span></span>
+            <div>
+              <h3>Lead pipeline automations</h3>
+              <p>Automations that route, tag, and follow up on every lead the moment it arrives. Nothing gets dropped.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ali"><span data-lucide="gauge"></span></span>
+            <div>
+              <h3>Performance dashboards</h3>
+              <p>Leads, quotes, close rate, and cost-per-job in one clear view, the numbers that tell you what's actually working.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ali"><span data-lucide="send"></span></span>
+            <div>
+              <h3>Automated briefs</h3>
+              <p>A daily or weekly summary delivered so you can stay on top of the business without digging.</p>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -200,7 +199,7 @@
         <span class="pcs-label">Private Client Services</span>
         <h2>Private data infrastructure, designed around how a principal actually operates.</h2>
       </div>
-      <p class="intro">For founders, executives, family offices, investment firms, RIAs, and professional practices whose work runs on sensitive data and high-stakes decisions. We design and operate the infrastructure in the background — with the <strong>confidentiality and security posture your stakeholders, regulators, and counterparties expect.</strong></p>
+      <p class="intro">For founders, executives, family offices, investment firms, RIAs, and professional practices whose work runs on sensitive data and high-stakes decisions. We design and operate the infrastructure in the background, with the <strong>confidentiality and security posture your stakeholders, regulators, and counterparties expect.</strong></p>
     </div>
 
     <div class="pcs-caps">
@@ -212,17 +211,17 @@
       <div class="pcs-cap">
         <span class="no">02</span>
         <h3>Information security posture</h3>
-        <p>Engagements scoped with your compliance environment in mind — WISP requirements, state data-privacy law, regulator expectations for financial advisors, and attorney-client and fiduciary confidentiality. We work alongside your existing IT, legal, and compliance counsel.</p>
+        <p>Engagements scoped with your compliance environment in mind: WISP requirements, state data-privacy law, regulator expectations for financial advisors, and attorney-client and fiduciary confidentiality. We work alongside your existing IT, legal, and compliance counsel.</p>
       </div>
       <div class="pcs-cap">
         <span class="no">03</span>
         <h3>Executive briefings &amp; intelligence reporting</h3>
-        <p>Private daily and weekly briefings synthesized from the sources you choose to surface — email, calendar, financials, operating data — and delivered through the channel you actually read.</p>
+        <p>Private daily and weekly briefings synthesized from the sources you choose to surface (email, calendar, financials, operating data) and delivered through the channel you actually read.</p>
       </div>
       <div class="pcs-cap">
         <span class="no">04</span>
         <h3>Custom internal tooling</h3>
-        <p>Bespoke dashboards, workflow tools, and decision-support systems built specifically for your operating cadence. Engineered to your situation — not adapted from off-the-shelf software.</p>
+        <p>Bespoke dashboards, workflow tools, and decision-support systems built specifically for your operating cadence. Engineered to your situation, not adapted from off-the-shelf software.</p>
       </div>
       <div class="pcs-cap">
         <span class="no">05</span>
@@ -233,7 +232,7 @@
 
     <div class="pcs-foot">
       <div>
-        <p class="lead-line">Most firms sell you software. We design infrastructure that runs your business in the background — engineered around how you operate.</p>
+        <p class="lead-line">Most firms sell you software. We design infrastructure that runs your business in the background, engineered around how you operate.</p>
         <p>Engagements are scoped privately and begin with a confidential conversation. We take on a limited number at a time.</p>
         <a href="contact.html?inquiry=private" class="pcs-cta">Request a private consultation <span class="arr" data-lucide="arrow-right"></span></a>
       </div>
@@ -252,7 +251,6 @@
 <section class="section warm">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">How engagements grow</span>
       <h2>Start where it makes sense. Move when it earns it.</h2>
       <p>No rigid packages. Most clients begin with a single tool and grow only as far as the work calls for.</p>
     </div>
@@ -260,7 +258,7 @@
       <div class="rung"><span class="step-no">Start here</span><h4>Estimate tool, deployed</h4><p>One custom tool built into your website. The entry point for most trade businesses.</p></div>
       <div class="rung"><span class="step-no">Then</span><h4>Tool + optimization &amp; reporting</h4><p>Automations, follow-up, and dashboards layered on so the tool earns its keep.</p></div>
       <div class="rung"><span class="step-no">Then</span><h4>Dedicated environment + briefings</h4><p>A private data environment and automated executive briefings for higher-stakes operations.</p></div>
-      <div class="rung"><span class="step-no">At the top</span><h4>Full bespoke engagement</h4><p class="priv">Private infrastructure, scoped confidentially. Not listed — arranged in conversation.</p></div>
+      <div class="rung"><span class="step-no">At the top</span><h4>Full bespoke engagement</h4><p class="priv">Private infrastructure, scoped confidentially. Not listed, arranged in conversation.</p></div>
     </div>
   </div>
 </section>
@@ -296,7 +294,7 @@
           </svg>
           <span class="name">STOCKWELL</span>
         </div>
-        <p class="blurb">Instant estimate tools for the trades. Private intelligence and secure infrastructure for principals. Springfield, Missouri.</p>
+        <p class="blurb">Instant estimate tools and models, a great fit for the trades. Private intelligence and secure infrastructure for principals. Springfield, Missouri.</p>
       </div>
       <div>
         <h5>Company</h5>
@@ -320,5 +318,17 @@
 
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });</script>
+<script>
+  document.querySelectorAll('.est-swatch').forEach(function(s){
+    s.addEventListener('click', function(){
+      document.querySelectorAll('.est-swatch').forEach(function(x){ x.classList.remove('on'); });
+      s.classList.add('on');
+      var p = document.getElementById('estPrice');
+      p.innerHTML = s.dataset.price + ' <small>· 380 ft</small>';
+      document.getElementById('estSpec').textContent = s.dataset.spec;
+      p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump');
+    });
+  });
+</script>
 </body>
 </html>

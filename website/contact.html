@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>Contact — Stockwell Media Co</title>
+<title>Contact · Stockwell Media Co</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <link rel="icon" href="../assets/logos/favicon.svg"/>
 <link rel="stylesheet" href="../styles.css"/>
@@ -41,7 +41,7 @@
   <div class="container">
     <span class="eyebrow" id="contact-eyebrow">Contact</span>
     <h1 id="contact-h1">Book a call, or just<br/>get the details.</h1>
-    <p id="contact-sub">Tell us a bit about your business and what you're after — we'll get back to you within one business day. No pressure, no hard sell.</p>
+    <p id="contact-sub">Tell us a bit about your business and what you're after, we'll get back to you within one business day. No pressure, no hard sell.</p>
   </div>
 </section>
 
@@ -64,7 +64,7 @@
           <option>The Fencer (fencing tool)</option>
           <option>Workflow automation &amp; reporting</option>
           <option>Private client services (confidential)</option>
-          <option>Not sure yet — let's talk</option>
+          <option>Not sure yet, let's talk</option>
         </select>
       </div>
       <div class="field">
@@ -76,8 +76,8 @@
     </form>
     <div id="sent" style="display:none;background:var(--sw-forest);color:var(--sw-cream);border-radius:var(--r-lg);padding:32px;">
       <div class="eyebrow on-dark" style="margin-bottom:12px;">Got it</div>
-      <h3 style="font-family:var(--font-display);font-weight:600;font-size:24px;color:var(--sw-cream);">Thanks — we'll be in touch.</h3>
-      <p style="color:rgba(244,239,228,0.74);margin-top:10px;line-height:1.6;">We'll reach out within one business day to set up your call. (This is a demo form — wire it to your inbox or CRM when you go live.)</p>
+      <h3 style="font-family:var(--font-display);font-weight:600;font-size:24px;color:var(--sw-cream);">Thanks, we'll be in touch.</h3>
+      <p style="color:rgba(244,239,228,0.74);margin-top:10px;line-height:1.6;">We'll reach out within one business day to set up your call. (This is a demo form, wire it to your inbox or CRM when you go live.)</p>
     </div>
 
     <aside>
@@ -139,17 +139,17 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });</script>
 <script>
-  // Discreet private-inquiry mode — shifts the form's voice for principals.
+  // Discreet private-inquiry mode, shifts the form's voice for principals.
   (function () {
     var params = new URLSearchParams(location.search);
     if (params.get('inquiry') !== 'private') return;
     var set = function (id, html) { var el = document.getElementById(id); if (el) el.innerHTML = html; };
     set('contact-eyebrow', 'Private inquiry');
     set('contact-h1', 'Start a confidential<br/>conversation.');
-    set('contact-sub', 'For founders, executives, and firms considering a private engagement. Share only what you’re comfortable with here — the substance is best handled directly, under NDA.');
+    set('contact-sub', 'For founders, executives, and firms considering a private engagement. Share only what you’re comfortable with here, the substance is best handled directly, under NDA.');
     set('msg-label', 'What would you like to discuss?');
     var msg = document.getElementById('msg');
-    if (msg) msg.placeholder = 'A brief note on the nature of the engagement — no sensitive detail needed at this stage.';
+    if (msg) msg.placeholder = 'A brief note on the nature of the engagement, no sensitive detail needed at this stage.';
     var need = document.getElementById('need');
     if (need) need.value = 'Private client services (confidential)';
     var btn = document.getElementById('contact-submit');
