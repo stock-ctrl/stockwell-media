@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Stock Curtis · Stockwell Media Co</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" href="assets/logos/favicon.svg"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    min-height: 100svh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px 20px;
+    background: radial-gradient(120% 90% at 50% 0%, #244231 0%, #1b3221 45%, #101d14 100%);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { text-decoration: none; color: inherit; }
+  .card { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+  .card-mark { width: 66px; height: 66px; margin-bottom: 18px; filter: drop-shadow(0 8px 22px rgba(0,0,0,0.35)); }
+  .card-co { font-family: var(--font-mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.34em; text-transform: uppercase; color: var(--sw-sage-light); padding-left: 0.34em; }
+
+  .card-name { font-family: var(--font-display); font-weight: 600; font-size: clamp(34px, 9vw, 44px); line-height: 1.02; letter-spacing: -0.02em; color: var(--sw-cream); margin-top: 22px; }
+  .card-title { font-size: 15px; color: rgba(244,239,228,0.72); margin-top: 8px; }
+  .card-tag { font-size: 14.5px; line-height: 1.58; color: rgba(244,239,228,0.62); margin-top: 18px; max-width: 34em; }
+
+  .card-actions { width: 100%; display: flex; flex-direction: column; gap: 11px; margin-top: 30px; }
+  .cbtn { display: flex; align-items: center; justify-content: center; gap: 10px;
+    height: 54px; border-radius: 14px; font-family: var(--font-sans); font-weight: 500; font-size: 16px;
+    border: 1px solid rgba(244,239,228,0.24); color: var(--sw-cream); background: rgba(244,239,228,0.06);
+    transition: background var(--dur-base), transform var(--dur-fast); -webkit-tap-highlight-color: transparent; }
+  .cbtn:active { transform: scale(0.985); }
+  .cbtn svg { width: 19px; height: 19px; stroke: currentColor; }
+  .cbtn-primary { background: var(--sw-cream); color: var(--sw-forest); border-color: var(--sw-cream); font-weight: 600; }
+  .cbtn-primary svg { stroke: var(--sw-forest); }
+  .card-row { display: flex; gap: 11px; }
+  .card-row .cbtn { flex: 1; }
+
+  .card-work { margin-top: 26px; display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--sw-sage-light); }
+  .card-work svg { width: 15px; height: 15px; stroke: currentColor; }
+  .card-loc { margin-top: 20px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(244,239,228,0.4); }
+</style>
+</head>
+<body>
+  <main class="card">
+    <svg class="card-mark" viewBox="0 0 100 100" aria-hidden="true">
+      <rect x="6" y="6" width="88" height="88" rx="22" fill="#f4efe4"/>
+      <ellipse cx="50" cy="76" rx="25" ry="6" fill="none" stroke="#1b3221" stroke-width="4"/>
+      <ellipse cx="50" cy="76" rx="8" ry="2.5" fill="#5a8040"/>
+      <rect x="47" y="28" width="6" height="46" rx="2" fill="#1b3221"/>
+      <line x1="50" y1="30" x2="28" y2="76" stroke="#5a8040" stroke-width="2.4" stroke-linecap="round"/>
+      <line x1="50" y1="30" x2="39" y2="76" stroke="#5a8040" stroke-width="2.4" stroke-linecap="round"/>
+      <line x1="50" y1="30" x2="61" y2="76" stroke="#5a8040" stroke-width="2.4" stroke-linecap="round"/>
+      <line x1="50" y1="30" x2="72" y2="76" stroke="#5a8040" stroke-width="2.4" stroke-linecap="round"/>
+    </svg>
+    <span class="card-co">Stockwell Media Co</span>
+
+    <h1 class="card-name">Stock Curtis</h1>
+    <p class="card-title">Founder</p>
+    <p class="card-tag">We build the systems businesses run on. Custom software, automation, and private infrastructure.</p>
+
+    <div class="card-actions">
+      <a class="cbtn cbtn-primary" href="tel:+14170000000"><span data-lucide="phone"></span> Call</a>
+      <div class="card-row">
+        <a class="cbtn" href="mailto:hello@stockwellmedia.co"><span data-lucide="mail"></span> Email</a>
+        <a class="cbtn" href="website/contact.html"><span data-lucide="calendar"></span> Book a call</a>
+      </div>
+      <div class="card-row">
+        <a class="cbtn" href="stock.vcf" download><span data-lucide="user-plus"></span> Save contact</a>
+        <a class="cbtn" href="#" target="_blank" rel="noopener"><span data-lucide="linkedin"></span> LinkedIn</a>
+      </div>
+    </div>
+
+    <a class="card-work" href="website/index.html">See our work <span data-lucide="arrow-right"></span></a>
+    <div class="card-loc">Springfield, Missouri</div>
+  </main>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons({ attrs: { 'stroke-width': 1.9 } });</script>
+</body>
+</html>
