@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="stylesheet" href="../styles.css"/>
+<link rel="stylesheet" href="site.css"/>
+<style>
+  body { background: var(--sw-cream-warm); padding: 40px 24px; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  .demo-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 52px; align-items: center; }
+  @media (max-width: 900px){ .demo-grid { grid-template-columns: 1fr; gap: 28px; } }
+  .demo-copy .eyebrow { margin-bottom: 14px; }
+  .demo-copy h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(26px,3vw,34px); line-height:1.08; letter-spacing:-0.02em; color: var(--sw-forest); }
+  .demo-copy p { font-size: 15.5px; line-height: 1.62; color: rgba(13,20,16,0.66); margin-top: 14px; max-width: 32em; }
+
+  /* trade tabs UNDER the estimator */
+  .trade-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .trade-tab { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-sans); font-weight: 500; font-size: 13px;
+    color: var(--sw-forest); background: var(--sw-cream-warm); border: 1px solid rgba(13,20,16,0.14); border-radius: 999px;
+    padding: 8px 13px; cursor: pointer; transition: all var(--dur-base); appearance: none; }
+  .trade-tab svg { width: 15px; height: 15px; stroke: var(--sw-sage-700); }
+  .trade-tab:hover { border-color: rgba(13,20,16,0.3); }
+  .trade-tab.on { background: var(--sw-forest); color: var(--sw-cream); border-color: var(--sw-forest); }
+  .trade-tab.on svg { stroke: var(--sw-cream); }
+
+  .est-poly2 polygon { fill: rgba(168,201,148,0.22); stroke: var(--sw-sage-light); stroke-width: 2.5;
+    vector-effect: non-scaling-stroke; stroke-linejoin: round; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.45)); }
+  /* fade the overlay + image on switch */
+  #map { transition: opacity var(--dur-base) var(--ease-out); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="demo-grid">
+    <div class="demo-copy">
+      <span class="eyebrow">A perfect example · the trades</span>
+      <h2 id="d-h2">A fence estimate tool.</h2>
+      <p id="d-p"></p>
+      <div style="margin-top:26px;">
+        <div class="est-mat-lbl">Pick a material</div>
+        <div class="est-swatches" id="swatches"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="mock mock-estimator">
+        <div class="est-map est-map--photo" id="map">
+          <div class="est-shade"></div>
+          <span class="est-addr"><span data-lucide="map-pin"></span>1442 Oak Ridge Dr</span>
+          <span class="est-tag" id="tag">Fence estimate tool</span>
+          <svg class="est-poly2" id="poly" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+          <div id="dots"></div>
+          <div id="lens"></div>
+          <div class="est-zoom"><span>+</span><span>&minus;</span></div>
+        </div>
+        <div class="est-pricebar">
+          <span class="lab">Instant estimate</span>
+          <span class="price" id="price"></span>
+        </div>
+        <div class="est-spec" id="spec"></div>
+      </div>
+      <div class="trade-tabs" id="tabs"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+const IMG = id => "url('https://images.unsplash.com/photo-"+id+"?auto=format&fit=crop&w=1200&q=80')";
+const TRADES = [
+  { key:'fencing', label:'Fencing', icon:'fence', h2:'A fence estimate tool.',
+    p:'Customers drop points to trace their fence line on a map of their own yard, pick a material, and see a price by the linear foot, gates and all.',
+    tag:'Fence estimate tool', type:'line',
+    img:'1565402170291-8491f14678db', size:'168%', pos:'9% 40%',
+    points:[[45.2,8],[74.1,11.6],[72.5,35.3],[34,77.1],[23.5,43.4],[29.9,35.1]],
+    lens:[[59.7,9.8,'90 ft'],[75.3,23.5,'46 ft'],[54.3,56.2,'145 ft'],[26.8,60.3,'73 ft'],[22.7,39.3,'26 ft']],
+    measure:'312 ft',
+    materials:[['Cedar','$10,240','#8a5a3c'],['Chain-link','$6,080','#9aa0a6'],['Vinyl','$15,200','#e8e4da']],
+    spec:['6 ft privacy','2 gates','Material + labor'] },
+
+  { key:'landscaping', label:'Landscaping', icon:'trees', h2:'A landscaping estimate tool.',
+    p:'Customers outline the lawn or bed on the map. The price scales with the square footage and the service they pick.',
+    tag:'Landscaping estimate tool', type:'area',
+    img:'1597026405082-eda9beae7513', size:'cover', pos:'center',
+    points:[[24,42],[50,40],[52,72],[26,74]], measure:'3,900 sq ft',
+    materials:[['Fresh sod','$4,180','#4f7a3a'],['Seed & straw','$1,750','#c7b46a'],['Mulch beds','$2,600','#6b4a2e']],
+    spec:['Full lawn','Haul-away','Material + labor'] },
+
+  { key:'concrete', label:'Concrete', icon:'square', h2:'A concrete estimate tool.',
+    p:'Customers draw the pour, a patio, slab, or walkway, choose a finish, and get square-foot pricing on the spot.',
+    tag:'Concrete estimate tool', type:'area',
+    img:'1524813686514-a57563d77965', size:'cover', pos:'center',
+    points:[[40,34],[60,32],[62,56],[42,58]], measure:'520 sq ft',
+    materials:[['Broom finish','$5,720','#9a9488'],['Stamped','$9,880','#8a6f57'],['Exposed agg.','$7,540','#b0a48c']],
+    spec:['4 in slab','Rebar','Material + labor'] },
+
+  { key:'driveway', label:'Driveway coating', icon:'brush', h2:'A driveway coating tool.',
+    p:'Customers outline the driveway, pick a seal or re-coat, and see the price by the square foot.',
+    tag:'Driveway coating tool', type:'area',
+    img:'1765106893273-980e5bf89a7c', size:'cover', pos:'center',
+    points:[[38,40],[56,38],[58,64],[40,66]], measure:'640 sq ft',
+    materials:[['Seal coat','$1,280','#3a3a40'],['Resurface','$3,520','#6b6b72'],['Epoxy','$5,120','#8a94a8']],
+    spec:['2 coats','Crack fill','Material + labor'] },
+
+  { key:'deck', label:'Decks', icon:'layers', h2:'A deck build estimate tool.',
+    p:'Customers set the deck footprint, choose the decking material, and see a build estimate by the square foot.',
+    tag:'Deck estimate tool', type:'area',
+    img:'1637123433690-228bb002d9e9', size:'cover', pos:'center',
+    points:[[42,44],[60,42],[62,62],[44,64]], measure:'320 sq ft',
+    materials:[['PT pine','$8,320','#b79a6a'],['Cedar','$11,200','#9a6a41'],['Composite','$15,680','#6f6b64']],
+    spec:['Railings','Stairs','Material + labor'] },
+
+  { key:'pressure', label:'Pressure washing', icon:'droplets', h2:'A pressure-washing tool.',
+    p:'Customers outline the surface, driveway, siding, or deck, and get an on-the-spot price by the square foot.',
+    tag:'Pressure washing tool', type:'area',
+    img:'1556231673-79c47d27cde0', size:'cover', pos:'center',
+    points:[[36,36],[58,34],[60,58],[38,60]], measure:'900 sq ft',
+    materials:[['Concrete','$540','#9a9488'],['Wood deck','$720','#9a6a41'],['Siding','$680','#8a94a8']],
+    spec:['Soft wash','Spot treat','Labor'] },
+
+  { key:'roofing', label:'Roofing', icon:'home', h2:'A roofing estimate tool.',
+    p:'Customers trace the roof, add pitch, and get a ballpark number by the square foot of roof area.',
+    tag:'Roofing estimate tool', type:'area',
+    img:'1506290690282-661fbd742be8', size:'cover', pos:'center',
+    points:[[30,22],[64,22],[66,56],[32,56]], measure:'2,400 sq ft',
+    materials:[['Asphalt','$18,400','#4a4a52'],['Metal','$31,200','#8a94a8'],['Tile','$40,800','#a5603f']],
+    spec:['Tear-off','Underlayment','Material + labor'] },
+];
+
+var tabs=document.getElementById('tabs'), map=document.getElementById('map'), poly=document.getElementById('poly'),
+    dots=document.getElementById('dots'), lens=document.getElementById('lens'), tag=document.getElementById('tag'),
+    price=document.getElementById('price'), spec=document.getElementById('spec'), swatches=document.getElementById('swatches'),
+    dh2=document.getElementById('d-h2'), dp=document.getElementById('d-p');
+
+tabs.innerHTML = TRADES.map(function(t,i){
+  return '<button class="trade-tab'+(i===0?' on':'')+'" data-i="'+i+'"><span data-lucide="'+t.icon+'"></span>'+t.label+'</button>';
+}).join('');
+
+function render(i){
+  var t = TRADES[i];
+  map.style.backgroundImage = IMG(t.img);
+  map.style.backgroundSize = t.size;
+  map.style.backgroundPosition = t.pos;
+  var pts = t.points.map(function(p){return p.join(',');}).join(' ');
+  poly.innerHTML = t.type==='line' ? '<polyline points="'+pts+'"/>' : '<polygon points="'+pts+'"/>';
+  dots.innerHTML = t.points.map(function(p){return '<span class="est-vtx" style="left:'+p[0]+'%;top:'+p[1]+'%"></span>';}).join('');
+  if (t.lens){
+    lens.innerHTML = t.lens.map(function(l){return '<span class="est-len" style="left:'+l[0]+'%;top:'+l[1]+'%">'+l[2]+'</span>';}).join('');
+  } else {
+    var cx=0, cy=0; t.points.forEach(function(p){cx+=p[0];cy+=p[1];}); cx/=t.points.length; cy/=t.points.length;
+    lens.innerHTML = '<span class="est-len" style="left:'+cx+'%;top:'+cy+'%">'+t.measure+'</span>';
+  }
+  tag.textContent = t.tag; dh2.textContent = t.h2; dp.textContent = t.p;
+  spec.innerHTML = t.spec.map(function(s){return '<span>'+s+'</span>';}).join('');
+  swatches.innerHTML = t.materials.map(function(m,j){
+    return '<button class="est-swatch'+(j===0?' on':'')+'" data-price="'+m[1]+'" style="--sw:'+m[2]+';">'+m[0]+'</button>';
+  }).join('');
+  price.innerHTML = t.materials[0][1] + ' <small>· '+t.measure+'</small>';
+  swatches.querySelectorAll('.est-swatch').forEach(function(b){
+    b.addEventListener('click', function(){
+      swatches.querySelectorAll('.est-swatch').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      price.innerHTML = b.dataset.price + ' <small>· '+t.measure+'</small>';
+      price.classList.remove('bump'); void price.offsetWidth; price.classList.add('bump');
+    });
+  });
+  lucide.createIcons({ attrs:{'stroke-width':1.75} });
+}
+
+tabs.querySelectorAll('.trade-tab').forEach(function(b){
+  b.addEventListener('click', function(){
+    tabs.querySelectorAll('.trade-tab').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on'); render(+b.dataset.i);
+  });
+});
+render(0);
+lucide.createIcons({ attrs:{'stroke-width':1.75} });
+</script>
+</body>
+</html>
