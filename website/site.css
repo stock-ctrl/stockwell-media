@@ -600,3 +600,56 @@ img { display: block; max-width: 100%; }
 .auto-list .ali svg { width: 23px; height: 23px; stroke: var(--sw-sage-light); }
 .auto-list h3 { font-family: var(--font-display); font-weight: 600; font-size: 19px; letter-spacing: -0.01em; color: var(--sw-cream); }
 .auto-list p { font-size: 14.5px; line-height: 1.6; color: rgba(244,239,228,0.7); margin-top: 6px; max-width: 34em; }
+
+/* ============================================================
+   SERVICE LEVELS / PACKAGES (services page)
+   ============================================================ */
+.levels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
+@media (max-width: 1000px){ .levels { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 560px){ .levels { grid-template-columns: 1fr; } }
+.level { display: flex; flex-direction: column; background: var(--sw-cream-warm); border: 1px solid rgba(13,20,16,0.1); border-radius: var(--r-lg); padding: 26px 24px; transition: box-shadow var(--dur-base) var(--ease-out), transform var(--dur-base), border-color var(--dur-base); }
+.level:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); border-color: rgba(13,20,16,0.16); }
+.level-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.level-no { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sw-sage-700); }
+.level-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(13,20,16,0.45); background: rgba(13,20,16,0.05); padding: 4px 9px; border-radius: 999px; }
+.level h3 { font-family: var(--font-display); font-weight: 600; font-size: 18.5px; line-height: 1.18; letter-spacing: -0.01em; color: var(--sw-forest); margin: 16px 0 8px; }
+.level > p { font-size: 13.5px; line-height: 1.5; color: rgba(13,20,16,0.62); }
+.level-builds { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.03em; color: var(--sw-sage-700); margin-top: 16px; }
+.level-list { list-style: none; display: flex; flex-direction: column; gap: 9px; margin: 14px 0 22px; }
+.level-list li { display: flex; gap: 9px; align-items: flex-start; font-size: 13.5px; line-height: 1.4; color: var(--sw-ink); }
+.level-list .lchk { flex: 0 0 auto; width: 16px; height: 16px; border-radius: 50%; background: var(--sw-sage-100); display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.level-list .lchk svg { width: 10px; height: 10px; stroke: var(--sw-sage-700); }
+.level-cta { margin-top: auto; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.02em; color: var(--sw-forest); display: inline-flex; align-items: center; gap: 7px; }
+.level-cta svg { width: 14px; height: 14px; stroke: currentColor; transition: transform var(--dur-base) var(--ease-out); }
+.level-cta:hover svg { transform: translateX(3px); }
+/* the top tier, visually distinct (forest) */
+.level--private { background: var(--sw-forest); border-color: var(--sw-forest); }
+.level--private .level-no { color: var(--sw-sage-light); }
+.level--private .level-tag { color: rgba(244,239,228,0.62); background: rgba(244,239,228,0.1); }
+.level--private h3 { color: var(--sw-cream); }
+.level--private > p { color: rgba(244,239,228,0.7); }
+.level--private .level-builds { color: var(--sw-sage-light); }
+.level--private .level-list li { color: var(--sw-cream); }
+.level--private .level-list .lchk { background: rgba(168,201,148,0.18); }
+.level--private .level-list .lchk svg { stroke: var(--sw-sage-light); }
+.level--private .level-cta { color: var(--sw-sage-light); }
+
+/* monthly-plan additions on top of .level cards */
+.level-name { font-family: var(--font-display); font-weight: 600; font-size: 20px; letter-spacing: -0.01em; color: var(--sw-forest); }
+.level--private .level-name { color: var(--sw-cream); }
+.level-price { font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--sw-forest); margin: 12px 0; display: flex; align-items: baseline; gap: 7px; }
+.level-price .per { font-family: var(--font-mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.03em; text-transform: uppercase; color: rgba(13,20,16,0.5); }
+.level--private .level-price { color: var(--sw-cream); }
+.level--private .level-price .per { color: rgba(244,239,228,0.55); }
+.level--popular { border-color: var(--sw-sage); box-shadow: var(--shadow-2); }
+
+/* ============================================================
+   WEBSITE + CONTENT one-time offering (services page)
+   ============================================================ */
+.setup-panel { background: var(--sw-cream-warm); border: 1px solid rgba(13,20,16,0.1); border-radius: var(--r-lg); padding: 30px 28px; }
+.setup-lbl { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sw-sage-700); margin-bottom: 16px; }
+.setup-panel--price { background: var(--sw-forest); border-color: var(--sw-forest); display: flex; flex-direction: column; }
+.setup-panel--price .setup-lbl { color: var(--sw-sage-light); }
+.setup-price-amt { font-family: var(--font-display); font-weight: 600; font-size: 26px; color: var(--sw-cream); letter-spacing: -0.01em; margin-bottom: 14px; }
+.setup-panel--price p { font-size: 14px; line-height: 1.6; color: rgba(244,239,228,0.72); margin-bottom: 24px; }
+.setup-panel--price .btn { margin-top: auto; align-self: flex-start; }
