@@ -26,8 +26,26 @@
 
   .est-poly2 polygon { fill: rgba(168,201,148,0.22); stroke: var(--sw-sage-light); stroke-width: 2.5;
     vector-effect: non-scaling-stroke; stroke-linejoin: round; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.45)); }
-  /* fade the overlay + image on switch */
-  #map { transition: opacity var(--dur-base) var(--ease-out); }
+
+  /* ---- landscape composite overlay + build-on animation ---- */
+  .est-len i { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+  #firepit, #plants { position:absolute; pointer-events:none; }
+  #plants { inset:0; }
+  #firepit { display:none; }
+  .est-swatch small { opacity:.62; font-weight:500; }
+  .est-replay { position:absolute; left:14px; bottom:14px; display:none; align-items:center; gap:6px;
+    font-family: var(--font-mono, monospace); font-size:11px; letter-spacing:.03em; color:var(--sw-forest);
+    background:rgba(244,239,228,0.92); border:1px solid rgba(13,20,16,0.12); border-radius:999px;
+    padding:6px 11px; cursor:pointer; backdrop-filter:saturate(1.2); z-index:5; }
+  .est-replay:hover { background:#fff; }
+  @keyframes paverdrop { from{opacity:0;transform:translateY(-5px) scale(.82)} to{opacity:1;transform:translateY(0) scale(1)} }
+  @keyframes drawbed  { from{stroke-dashoffset:var(--l)} to{stroke-dashoffset:0} }
+  @keyframes plantpop { from{opacity:0;transform:translate(-50%,-50%) scale(0)} to{opacity:1;transform:translate(-50%,-50%) scale(1)} }
+  @keyframes pitignite{ from{opacity:0;transform:translate(-50%,-50%) scale(0)} to{opacity:1;transform:translate(-50%,-50%) scale(1)} }
+  @keyframes labelfade{ from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes pitpulse { 0%,100%{box-shadow:0 1px 5px rgba(0,0,0,.55),inset 0 0 5px rgba(0,0,0,.55),0 0 5px 1px rgba(224,122,63,.30)}
+                        50%{box-shadow:0 1px 5px rgba(0,0,0,.55),inset 0 0 5px rgba(0,0,0,.55),0 0 13px 3px rgba(242,146,64,.60)} }
+  @keyframes ovsettle { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body>
@@ -38,7 +56,7 @@
       <h2 id="d-h2">A fence estimate tool.</h2>
       <p id="d-p"></p>
       <div style="margin-top:26px;">
-        <div class="est-mat-lbl">Pick a material</div>
+        <div class="est-mat-lbl" id="mat-lbl">Pick a material</div>
         <div class="est-swatches" id="swatches"></div>
       </div>
     </div>
@@ -52,6 +70,9 @@
           <svg class="est-poly2" id="poly" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
           <div id="dots"></div>
           <div id="lens"></div>
+          <div id="firepit"></div>
+          <div id="plants"></div>
+          <button class="est-replay" id="replay">&#8635; Replay</button>
           <div class="est-zoom"><span>+</span><span>&minus;</span></div>
         </div>
         <div class="est-pricebar">
@@ -68,6 +89,8 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
 const IMG = id => "url('https://images.unsplash.com/photo-"+id+"?auto=format&fit=crop&w=1200&q=80')";
+
+/* ---------------- generic trades ---------------- */
 const TRADES = [
   { key:'fencing', label:'Fencing', icon:'fence', h2:'A fence estimate tool.',
     p:'Customers drop points to trace their fence line on a map of their own yard, pick a material, and see a price by the linear foot, gates and all.',
@@ -79,13 +102,8 @@ const TRADES = [
     materials:[['Cedar','$10,240','#8a5a3c'],['Chain-link','$6,080','#9aa0a6'],['Vinyl','$15,200','#e8e4da']],
     spec:['6 ft privacy','2 gates','Material + labor'] },
 
-  { key:'landscaping', label:'Landscaping', icon:'trees', h2:'A landscaping estimate tool.',
-    p:'Customers outline the lawn or bed on the map. The price scales with the square footage and the service they pick.',
-    tag:'Landscaping estimate tool', type:'area',
-    img:'1597026405082-eda9beae7513', size:'cover', pos:'center',
-    points:[[24,42],[50,40],[52,72],[26,74]], measure:'3,900 sq ft',
-    materials:[['Fresh sod','$4,180','#4f7a3a'],['Seed & straw','$1,750','#c7b46a'],['Mulch beds','$2,600','#6b4a2e']],
-    spec:['Full lawn','Haul-away','Material + labor'] },
+  { key:'landscaping', label:'Landscaping', icon:'trees', special:true,
+    img:'1597026405082-eda9beae7513' },
 
   { key:'concrete', label:'Concrete', icon:'square', h2:'A concrete estimate tool.',
     p:'Customers draw the pour, a patio, slab, or walkway, choose a finish, and get square-foot pricing on the spot.',
@@ -128,52 +146,181 @@ const TRADES = [
     spec:['Tear-off','Underlayment','Material + labor'] },
 ];
 
-var tabs=document.getElementById('tabs'), map=document.getElementById('map'), poly=document.getElementById('poly'),
-    dots=document.getElementById('dots'), lens=document.getElementById('lens'), tag=document.getElementById('tag'),
-    price=document.getElementById('price'), spec=document.getElementById('spec'), swatches=document.getElementById('swatches'),
-    dh2=document.getElementById('d-h2'), dp=document.getElementById('d-p');
+/* ---------------- landscape design (composite) ---------------- */
+const LS = {
+  bg:{size:260,x:42.5,y:56.375},
+  tag:'Landscape design tool',
+  h2:'A landscape design tool.',
+  p:'Customers lay out the yard piece by piece, a bed here, a patio and fire pit there, and watch the estimate build as the design comes together.',
+  spec:['Design + build','Haul-away','Material + labor'],
+  total:'$12,000',
+  bed:[[43.9,75.9],[41.8,74.9],[41.6,72.3],[41.1,71],[40.1,69.6],[38.3,68.6],[36.5,67.6],[34.9,66.8],[33.8,66.8],[32.9,65.2],[31.8,64.2],[30.5,63.1],[29.7,62.1],[29.3,57.6],[28.7,55],[28.7,53.2],[29.3,50.3],[30.3,46.9]],
+  patio:[[63.7,34],[67,20.9],[80.4,29.8],[76.6,43.7]],
+  pit:{cx:70.4,cy:29.8,r:1.89},
+  labels:[[26.6,63.95,'Flower bed','#804e2c','bed'],[67.9,45.7,'Paver patio','#c9b592','patio'],[56.4,28.8,'Fire pit','#f0922e','pit']],
+  parts:[
+    {key:'bed',   name:'Flower bed',  color:'#804e2c', price:'$2,850', note:'Mulch bed + plantings'},
+    {key:'patio', name:'Paver patio', color:'#c9b592', price:'$7,200', note:'220 sq ft, paver'},
+    {key:'pit',   name:'Fire pit',    color:'#f0922e', price:'$1,950', note:'Stone ring, gas'}
+  ]
+};
 
-tabs.innerHTML = TRADES.map(function(t,i){
-  return '<button class="trade-tab'+(i===0?' on':'')+'" data-i="'+i+'"><span data-lucide="'+t.icon+'"></span>'+t.label+'</button>';
-}).join('');
+const $ = id => document.getElementById(id);
+const map=$('map'), poly=$('poly'), dots=$('dots'), lens=$('lens'), fp=$('firepit'), plants=$('plants'),
+      tag=$('tag'), price=$('price'), spec=$('spec'), swatches=$('swatches'), matLbl=$('mat-lbl'),
+      dh2=$('d-h2'), dp=$('d-p'), replay=$('replay'), shade=map.querySelector('.est-shade');
 
-function render(i){
-  var t = TRADES[i];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t];
+const bilerp=(P,u,v)=>lerp(lerp(P[0],P[1],u),lerp(P[3],P[2],u),v);
+function smooth(pts){
+  if(pts.length<3) return pts.length?('M '+pts.map(p=>p.join(' ')).join(' L ')):'';
+  let d='M '+pts[0][0]+' '+pts[0][1];
+  for(let i=0;i<pts.length-1;i++){
+    const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;
+    const c1x=p1[0]+(p2[0]-p0[0])/6,c1y=p1[1]+(p2[1]-p0[1])/6;
+    const c2x=p2[0]-(p3[0]-p1[0])/6,c2y=p2[1]-(p3[1]-p1[1])/6;
+    d+=' C '+c1x.toFixed(2)+' '+c1y.toFixed(2)+' '+c2x.toFixed(2)+' '+c2y.toFixed(2)+' '+p2[0]+' '+p2[1];
+  }
+  return d;
+}
+
+/* ---- generic (non-landscape) render ---- */
+function genericRender(t){
+  // reset landscape bits
+  map.style.filter=''; if(shade){shade.style.background='';}
+  fp.style.display='none'; fp.style.animation=''; plants.innerHTML=''; replay.style.display='none';
+  LSFOCUS=null;
   map.style.backgroundImage = IMG(t.img);
   map.style.backgroundSize = t.size;
   map.style.backgroundPosition = t.pos;
-  var pts = t.points.map(function(p){return p.join(',');}).join(' ');
-  poly.innerHTML = t.type==='line' ? '<polyline points="'+pts+'"/>' : '<polygon points="'+pts+'"/>';
-  dots.innerHTML = t.points.map(function(p){return '<span class="est-vtx" style="left:'+p[0]+'%;top:'+p[1]+'%"></span>';}).join('');
-  if (t.lens){
-    lens.innerHTML = t.lens.map(function(l){return '<span class="est-len" style="left:'+l[0]+'%;top:'+l[1]+'%">'+l[2]+'</span>';}).join('');
+  const pts = t.points.map(p=>p.join(',')).join(' ');
+  poly.innerHTML = t.type==='line' ? '<polyline points="'+pts+'" fill="none" stroke="var(--sw-sage-light)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" style="filter:drop-shadow(0 1px 3px rgba(0,0,0,.45))"/>' : '<polygon points="'+pts+'"/>';
+  dots.innerHTML = t.points.map(p=>'<span class="est-vtx" style="left:'+p[0]+'%;top:'+p[1]+'%"></span>').join('');
+  if(t.lens){
+    lens.innerHTML = t.lens.map(l=>'<span class="est-len" style="left:'+l[0]+'%;top:'+l[1]+'%">'+l[2]+'</span>').join('');
   } else {
-    var cx=0, cy=0; t.points.forEach(function(p){cx+=p[0];cy+=p[1];}); cx/=t.points.length; cy/=t.points.length;
+    let cx=0,cy=0; t.points.forEach(p=>{cx+=p[0];cy+=p[1];}); cx/=t.points.length; cy/=t.points.length;
     lens.innerHTML = '<span class="est-len" style="left:'+cx+'%;top:'+cy+'%">'+t.measure+'</span>';
   }
-  tag.textContent = t.tag; dh2.textContent = t.h2; dp.textContent = t.p;
-  spec.innerHTML = t.spec.map(function(s){return '<span>'+s+'</span>';}).join('');
-  swatches.innerHTML = t.materials.map(function(m,j){
-    return '<button class="est-swatch'+(j===0?' on':'')+'" data-price="'+m[1]+'" style="--sw:'+m[2]+';">'+m[0]+'</button>';
-  }).join('');
+  tag.textContent=t.tag; dh2.textContent=t.h2; dp.textContent=t.p; matLbl.textContent='Pick a material';
+  spec.innerHTML = t.spec.map(s=>'<span>'+s+'</span>').join('');
+  swatches.innerHTML = t.materials.map((m,j)=>'<button class="est-swatch'+(j===0?' on':'')+'" data-price="'+m[1]+'" style="--sw:'+m[2]+';">'+m[0]+'</button>').join('');
   price.innerHTML = t.materials[0][1] + ' <small>· '+t.measure+'</small>';
-  swatches.querySelectorAll('.est-swatch').forEach(function(b){
-    b.addEventListener('click', function(){
-      swatches.querySelectorAll('.est-swatch').forEach(function(x){x.classList.remove('on');});
-      b.classList.add('on');
-      price.innerHTML = b.dataset.price + ' <small>· '+t.measure+'</small>';
-      price.classList.remove('bump'); void price.offsetWidth; price.classList.add('bump');
-    });
-  });
+  swatches.querySelectorAll('.est-swatch').forEach(b=>b.addEventListener('click',()=>{
+    swatches.querySelectorAll('.est-swatch').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    price.innerHTML = b.dataset.price + ' <small>· '+t.measure+'</small>';
+    price.classList.remove('bump'); void price.offsetWidth; price.classList.add('bump');
+  }));
   lucide.createIcons({ attrs:{'stroke-width':1.75} });
 }
 
-tabs.querySelectorAll('.trade-tab').forEach(function(b){
-  b.addEventListener('click', function(){
-    tabs.querySelectorAll('.trade-tab').forEach(function(x){x.classList.remove('on');});
-    b.classList.add('on'); render(+b.dataset.i);
-  });
-});
+/* ---- landscape render + build-on animation ---- */
+let LSFOCUS=null, LS_FIN=null;
+const lop = k => (!LSFOCUS||LSFOCUS===k)?1:0.22;
+
+function paverCells(anim){
+  const P=LS.patio, cols=4, rows=3, out=[], base=150, step=85;
+  for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){
+    let c=[bilerp(P,i/cols,j/rows),bilerp(P,(i+1)/cols,j/rows),bilerp(P,(i+1)/cols,(j+1)/rows),bilerp(P,i/cols,(j+1)/rows)];
+    const cx=(c[0][0]+c[1][0]+c[2][0]+c[3][0])/4, cy=(c[0][1]+c[1][1]+c[2][1]+c[3][1])/4, f=0.9;
+    c=c.map(p=>[cx+(p[0]-cx)*f, cy+(p[1]-cy)*f]);
+    const anStyle = anim ? ';transform-box:fill-box;transform-origin:center;opacity:0;animation:paverdrop .45s cubic-bezier(.22,1,.36,1) both;animation-delay:'+(base+(i+j)*step)+'ms' : '';
+    // fill/stroke via inline style so they beat the .est-poly2 polygon CSS rule
+    out.push('<polygon points="'+c.map(p=>p.map(n=>n.toFixed(2)).join(',')).join(' ')+'" style="fill:rgba(201,175,136,0.95);stroke:rgba(247,240,226,.85);stroke-width:1;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))'+anStyle+'"/>');
+  }
+  return '<g opacity="'+lop('patio')+'">'+out.join('')+'</g>';
+}
+function bedLen(d){ const t=document.createElementNS('http://www.w3.org/2000/svg','path'); t.setAttribute('d',d); poly.appendChild(t); const L=t.getTotalLength(); t.remove(); return L; }
+function bedSVG(anim){
+  const d=smooth(LS.bed), L=bedLen(d);
+  const draw=off=>anim?' style="--l:'+L.toFixed(1)+';stroke-dashoffset:0;stroke-dasharray:'+L.toFixed(1)+';animation:drawbed 1.1s ease both;animation-delay:'+off+'ms"':'';
+  return '<g opacity="'+lop('bed')+'">'+
+    '<path d="'+d+'" fill="none" stroke="rgba(52,32,18,0.82)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"'+draw(1050)+'/>'+
+    '<path d="'+d+'" fill="none" stroke="rgba(128,78,44,0.95)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"'+draw(1120)+'/>'+
+  '</g>';
+}
+function makePlants(){
+  const b=LS.bed, out=[];
+  for(let i=1;i<b.length-1;i+=2){
+    const a=b[i-1], c=b[i], e=b[i+1];
+    let nx=-(e[1]-a[1]), ny=(e[0]-a[0]); const m=Math.hypot(nx,ny)||1; nx/=m; ny/=m;
+    const side=(i%4===1)?1:-1, off=1.5*side;
+    out.push([+(c[0]+nx*off).toFixed(2), +(c[1]+ny*off).toFixed(2), 15+(i%3)*4]);
+  }
+  return out;
+}
+function drawPlants(anim){
+  plants.style.opacity=lop('bed');
+  plants.innerHTML=makePlants().map((p,i)=>{
+    const delay=2150+i*70;
+    return '<div style="position:absolute;left:'+p[0]+'%;top:'+p[1]+'%;width:'+p[2]+'px;height:'+p[2]+'px;border-radius:50%;'+
+      'background:radial-gradient(circle at 38% 33%, #8fc16a, #55823f 66%, #33562a);box-shadow:0 1px 3px rgba(0,0,0,.55), inset 0 0 3px rgba(0,0,0,.25);'+
+      'transform:translate(-50%,-50%) scale('+(anim?0:1)+');opacity:'+(anim?0:1)+';'+
+      (anim?'animation:plantpop .42s cubic-bezier(.22,1,.36,1) both;animation-delay:'+delay+'ms;':'')+'"></div>';
+  }).join('');
+}
+function drawPit(anim){
+  const D=Math.max((2*LS.pit.r/100)*map.clientWidth,10);
+  fp.style.display='block'; fp.style.left=LS.pit.cx+'%'; fp.style.top=LS.pit.cy+'%'; fp.style.width=D+'px'; fp.style.height=D+'px';
+  fp.style.borderRadius='50%'; fp.style.opacity=lop('pit');
+  fp.style.background='radial-gradient(circle, #ffcf8a 0%, #f0932e 14%, #c25a2a 26%, #5c2a15 38%, #2b2723 48%, #2b2723 57%, #b3a488 60%, #ded2b7 80%, #c7b997 100%)';
+  if(anim){ fp.style.transform='translate(-50%,-50%) scale(0)';
+    fp.style.animation='pitignite .5s cubic-bezier(.22,1,.36,1) both 2750ms, pitpulse 2.6s ease-in-out infinite 3250ms'; }
+  else { fp.style.transform='translate(-50%,-50%)'; fp.style.animation='pitpulse 2.6s ease-in-out infinite'; }
+}
+function drawLabels(anim){
+  lens.innerHTML=LS.labels.map(l=>'<span class="est-len" style="left:'+l[0]+'%;top:'+l[1]+'%;opacity:'+lop(l[4])+';'+
+    (anim?'animation:labelfade .5s ease both;animation-delay:3250ms;':'')+'"><i style="background:'+l[3]+'"></i>'+l[2]+'</span>').join('');
+}
+function paintParts(){
+  swatches.innerHTML=LS.parts.map(p=>'<button class="est-swatch'+(LSFOCUS===p.key?' on':'')+'" data-k="'+p.key+'" style="--sw:'+p.color+'">'+p.name+' <small>'+p.price+'</small></button>').join('');
+  swatches.querySelectorAll('.est-swatch').forEach(bn=>bn.addEventListener('click',()=>{
+    LSFOCUS = LSFOCUS===bn.dataset.k ? null : bn.dataset.k;
+    const part=LS.parts.find(x=>x.key===LSFOCUS);
+    price.innerHTML = part ? part.price+' <small>· '+part.note+'</small>' : LS.total+' <small>· full design</small>';
+    price.classList.remove('bump'); void price.offsetWidth; price.classList.add('bump');
+    renderLS(false);
+  }));
+}
+function renderLS(anim){
+  map.style.backgroundImage=IMG(LS.img_||'1597026405082-eda9beae7513');
+  map.style.backgroundSize=LS.bg.size+'%'; map.style.backgroundPosition=LS.bg.x+'% '+LS.bg.y+'%';
+  map.style.filter='saturate(1.12) contrast(1.04)';
+  if(shade){ shade.style.background='radial-gradient(120% 100% at 50% 40%, rgba(0,0,0,0) 55%, rgba(0,0,0,.28) 100%)'; }
+  poly.innerHTML = paverCells(anim) + bedSVG(anim);
+  dots.innerHTML='';
+  drawPit(anim); drawPlants(anim); drawLabels(anim);
+  paintParts();
+  if(anim){ replay.style.animation='ovsettle .5s cubic-bezier(.22,1,.36,1)'; }
+}
+function renderLandscape(){
+  tag.textContent=LS.tag; dh2.textContent=LS.h2; dp.textContent=LS.p; matLbl.textContent='In this design';
+  spec.innerHTML=LS.spec.map(s=>'<span>'+s+'</span>').join('');
+  LSFOCUS=null;
+  price.innerHTML=LS.total+' <small>· full design</small>';
+  replay.style.display='inline-flex';
+  renderLS(true);
+  clearTimeout(LS_FIN); LS_FIN=setTimeout(()=>{ if(TRADES[CUR].special) renderLS(false); }, 4300);
+  lucide.createIcons({ attrs:{'stroke-width':1.75} });
+}
+LS.img_='1597026405082-eda9beae7513';
+
+/* ---------------- tabs + boot ---------------- */
+let CUR=0;
+const tabs=$('tabs');
+tabs.innerHTML = TRADES.map((t,i)=>'<button class="trade-tab'+(i===0?' on':'')+'" data-i="'+i+'"><span data-lucide="'+t.icon+'"></span>'+t.label+'</button>').join('');
+function render(i){
+  CUR=i;
+  const t=TRADES[i];
+  if(t.special) renderLandscape();
+  else genericRender(t);
+}
+tabs.querySelectorAll('.trade-tab').forEach(b=>b.addEventListener('click',()=>{
+  tabs.querySelectorAll('.trade-tab').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); render(+b.dataset.i);
+}));
+replay.addEventListener('click',()=>{ if(TRADES[CUR].special) renderLandscape(); });
 render(0);
 lucide.createIcons({ attrs:{'stroke-width':1.75} });
 </script>
