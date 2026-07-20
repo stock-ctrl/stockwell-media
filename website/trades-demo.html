@@ -232,11 +232,16 @@ function patioOutline(anim){
 // real flagstone photo, clipped to the patio shape (HTML layer = no SVG stretch)
 function drawPatio(anim){
   const [cx,cy]=patioCentroid();
+  const xs=LS.patio.map(p=>p[0]), ys=LS.patio.map(p=>p[1]);
+  const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+  const W=map.clientWidth||628, H=map.clientHeight||390;
   patiofill.style.display='block';
   patiofill.style.clipPath=patioClip(); patiofill.style.webkitClipPath=patioClip();
   patiofill.style.backgroundImage="url('../assets/textures/flagstone.jpg')";
-  patiofill.style.backgroundSize='4%';
-  patiofill.style.backgroundPosition=cx+'% '+cy+'%';
+  // map ONE copy of the stone photo onto the patio's bounding box -> no tiling, no repeat
+  patiofill.style.backgroundRepeat='no-repeat';
+  patiofill.style.backgroundSize=((maxX-minX)/100*W).toFixed(1)+'px '+((maxY-minY)/100*H).toFixed(1)+'px';
+  patiofill.style.backgroundPosition=(minX/100*W).toFixed(1)+'px '+(minY/100*H).toFixed(1)+'px';
   patiofill.style.filter='drop-shadow(0 2px 5px rgba(0,0,0,.5)) contrast(1.06) saturate(1.05)';
   patiofill.style.opacity=lop('patio');
   patiofill.style.transformOrigin=cx+'% '+cy+'%';
