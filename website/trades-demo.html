@@ -29,9 +29,10 @@
 
   /* ---- landscape composite overlay + build-on animation ---- */
   .est-len i { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; vertical-align:middle; }
-  #firepit, #plants { position:absolute; pointer-events:none; }
+  #firepit, #plants, #patiofill { position:absolute; pointer-events:none; }
   #plants { inset:0; }
   #firepit { display:none; }
+  #patiofill { inset:0; display:none; background-repeat:no-repeat; }
   .est-swatch small { opacity:.62; font-weight:500; }
   .est-replay { position:absolute; left:14px; bottom:14px; display:none; align-items:center; gap:6px;
     font-family: var(--font-mono, monospace); font-size:11px; letter-spacing:.03em; color:var(--sw-forest);
@@ -46,6 +47,7 @@
   @keyframes pitpulse { 0%,100%{box-shadow:0 1px 5px rgba(0,0,0,.55),inset 0 0 5px rgba(0,0,0,.55),0 0 5px 1px rgba(224,122,63,.30)}
                         50%{box-shadow:0 1px 5px rgba(0,0,0,.55),inset 0 0 5px rgba(0,0,0,.55),0 0 13px 3px rgba(242,146,64,.60)} }
   @keyframes ovsettle { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes patiorise { from{opacity:0;transform:scale(.55)} to{opacity:1;transform:scale(1)} }
 </style>
 </head>
 <body>
@@ -67,6 +69,7 @@
           <div class="est-shade"></div>
           <span class="est-addr"><span data-lucide="map-pin"></span>1442 Oak Ridge Dr</span>
           <span class="est-tag" id="tag">Fence estimate tool</span>
+          <div id="patiofill"></div>
           <svg class="est-poly2" id="poly" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
           <div id="dots"></div>
           <div id="lens"></div>
@@ -166,7 +169,7 @@ const LS = {
 };
 
 const $ = id => document.getElementById(id);
-const map=$('map'), poly=$('poly'), dots=$('dots'), lens=$('lens'), fp=$('firepit'), plants=$('plants'),
+const map=$('map'), poly=$('poly'), dots=$('dots'), lens=$('lens'), fp=$('firepit'), plants=$('plants'), patiofill=$('patiofill'),
       tag=$('tag'), price=$('price'), spec=$('spec'), swatches=$('swatches'), matLbl=$('mat-lbl'),
       dh2=$('d-h2'), dp=$('d-p'), replay=$('replay'), shade=map.querySelector('.est-shade');
 
@@ -188,7 +191,7 @@ function smooth(pts){
 function genericRender(t){
   // reset landscape bits
   map.style.filter=''; if(shade){shade.style.background='';}
-  fp.style.display='none'; fp.style.animation=''; plants.innerHTML=''; replay.style.display='none';
+  fp.style.display='none'; fp.style.animation=''; plants.innerHTML=''; patiofill.style.display='none'; replay.style.display='none';
   LSFOCUS=null;
   map.style.backgroundImage = IMG(t.img);
   map.style.backgroundSize = t.size;
@@ -219,17 +222,25 @@ function genericRender(t){
 let LSFOCUS=null, LS_FIN=null;
 const lop = k => (!LSFOCUS||LSFOCUS===k)?1:0.22;
 
-function paverCells(anim){
-  const P=LS.patio, cols=4, rows=3, out=[], base=150, step=85;
-  for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){
-    let c=[bilerp(P,i/cols,j/rows),bilerp(P,(i+1)/cols,j/rows),bilerp(P,(i+1)/cols,(j+1)/rows),bilerp(P,i/cols,(j+1)/rows)];
-    const cx=(c[0][0]+c[1][0]+c[2][0]+c[3][0])/4, cy=(c[0][1]+c[1][1]+c[2][1]+c[3][1])/4, f=0.9;
-    c=c.map(p=>[cx+(p[0]-cx)*f, cy+(p[1]-cy)*f]);
-    const anStyle = anim ? ';transform-box:fill-box;transform-origin:center;opacity:0;animation:paverdrop .45s cubic-bezier(.22,1,.36,1) both;animation-delay:'+(base+(i+j)*step)+'ms' : '';
-    // fill/stroke via inline style so they beat the .est-poly2 polygon CSS rule
-    out.push('<polygon points="'+c.map(p=>p.map(n=>n.toFixed(2)).join(',')).join(' ')+'" style="fill:rgba(201,175,136,0.95);stroke:rgba(247,240,226,.85);stroke-width:1;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))'+anStyle+'"/>');
-  }
-  return '<g opacity="'+lop('patio')+'">'+out.join('')+'</g>';
+const patioCentroid = () => [LS.patio.reduce((a,p)=>a+p[0],0)/4, LS.patio.reduce((a,p)=>a+p[1],0)/4];
+const patioClip = () => 'polygon('+LS.patio.map(p=>p[0]+'% '+p[1]+'%').join(', ')+')';
+// crisp built edge over the real-stone fill (fill:none so the photo shows through)
+function patioOutline(anim){
+  const an = anim ? ';animation:labelfade .5s ease both;animation-delay:250ms' : '';
+  return '<polygon points="'+LS.patio.map(p=>p.join(',')).join(' ')+'" style="fill:none;stroke:rgba(233,225,207,.9);stroke-width:1.4;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55));opacity:'+lop('patio')+an+'"/>';
+}
+// real flagstone photo, clipped to the patio shape (HTML layer = no SVG stretch)
+function drawPatio(anim){
+  const [cx,cy]=patioCentroid();
+  patiofill.style.display='block';
+  patiofill.style.clipPath=patioClip(); patiofill.style.webkitClipPath=patioClip();
+  patiofill.style.backgroundImage="url('../assets/textures/flagstone.jpg')";
+  patiofill.style.backgroundSize='46%';
+  patiofill.style.backgroundPosition=cx+'% '+cy+'%';
+  patiofill.style.filter='drop-shadow(0 2px 5px rgba(0,0,0,.5)) contrast(1.06) saturate(1.05)';
+  patiofill.style.opacity=lop('patio');
+  patiofill.style.transformOrigin=cx+'% '+cy+'%';
+  patiofill.style.animation = anim ? 'patiorise .6s cubic-bezier(.22,1,.36,1) both 150ms' : 'none';
 }
 function bedLen(d){ const t=document.createElementNS('http://www.w3.org/2000/svg','path'); t.setAttribute('d',d); poly.appendChild(t); const L=t.getTotalLength(); t.remove(); return L; }
 function bedSVG(anim){
@@ -288,9 +299,9 @@ function renderLS(anim){
   map.style.backgroundSize=LS.bg.size+'%'; map.style.backgroundPosition=LS.bg.x+'% '+LS.bg.y+'%';
   map.style.filter='saturate(1.12) contrast(1.04)';
   if(shade){ shade.style.background='radial-gradient(120% 100% at 50% 40%, rgba(0,0,0,0) 55%, rgba(0,0,0,.28) 100%)'; }
-  poly.innerHTML = paverCells(anim) + bedSVG(anim);
+  poly.innerHTML = patioOutline(anim) + bedSVG(anim);
   dots.innerHTML='';
-  drawPit(anim); drawPlants(anim); drawLabels(anim);
+  drawPatio(anim); drawPit(anim); drawPlants(anim); drawLabels(anim);
   paintParts();
   if(anim){ replay.style.animation='ovsettle .5s cubic-bezier(.22,1,.36,1)'; }
 }
