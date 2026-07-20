@@ -32,7 +32,7 @@
   #firepit, #plants, #patiofill { position:absolute; pointer-events:none; }
   #plants { inset:0; }
   #firepit { display:none; }
-  #patiofill { inset:0; display:none; background-repeat:no-repeat; }
+  #patiofill { inset:0; display:none; background-repeat:repeat; }
   .est-swatch small { opacity:.62; font-weight:500; }
   .est-replay { position:absolute; left:14px; bottom:14px; display:none; align-items:center; gap:6px;
     font-family: var(--font-mono, monospace); font-size:11px; letter-spacing:.03em; color:var(--sw-forest);
@@ -235,7 +235,7 @@ function drawPatio(anim){
   patiofill.style.display='block';
   patiofill.style.clipPath=patioClip(); patiofill.style.webkitClipPath=patioClip();
   patiofill.style.backgroundImage="url('../assets/textures/flagstone.jpg')";
-  patiofill.style.backgroundSize='46%';
+  patiofill.style.backgroundSize='20%';
   patiofill.style.backgroundPosition=cx+'% '+cy+'%';
   patiofill.style.filter='drop-shadow(0 2px 5px rgba(0,0,0,.5)) contrast(1.06) saturate(1.05)';
   patiofill.style.opacity=lop('patio');
