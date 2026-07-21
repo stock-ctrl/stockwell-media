@@ -238,9 +238,10 @@ function drawPatio(anim){
   patiofill.style.display='block';
   patiofill.style.clipPath=patioClip(); patiofill.style.webkitClipPath=patioClip();
   patiofill.style.backgroundImage="url('../assets/textures/flagstone.jpg')";
-  // map ONE copy of the stone photo onto the patio's bounding box -> no tiling, no repeat
-  patiofill.style.backgroundRepeat='no-repeat';
-  patiofill.style.backgroundSize=((maxX-minX)/100*W).toFixed(1)+'px '+((maxY-minY)/100*H).toFixed(1)+'px';
+  // seamless flagstone tiled small -> very fine stones, no visible seam
+  patiofill.style.backgroundRepeat='repeat';
+  const tileW=(maxX-minX)/100*W*0.5, tileH=tileW/(540/390);
+  patiofill.style.backgroundSize=tileW.toFixed(1)+'px '+tileH.toFixed(1)+'px';
   patiofill.style.backgroundPosition=(minX/100*W).toFixed(1)+'px '+(minY/100*H).toFixed(1)+'px';
   patiofill.style.filter='drop-shadow(0 2px 5px rgba(0,0,0,.5)) contrast(1.06) saturate(1.05)';
   patiofill.style.opacity=lop('patio');
