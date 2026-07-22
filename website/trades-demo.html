@@ -151,7 +151,7 @@ const TRADES = [
 
 /* ---------------- landscape design (composite) ---------------- */
 const LS = {
-  bg:{size:260,x:42.5,y:56.375},
+  bg:{size:'cover',pos:'50% 45%'},
   tag:'Landscape design tool',
   h2:'A landscape design tool.',
   p:'Customers lay out the yard piece by piece, a bed here, a patio and fire pit there, and watch the estimate build as the design comes together.',
@@ -301,24 +301,22 @@ function paintParts(){
   }));
 }
 function renderLS(anim){
-  map.style.backgroundImage=IMG(LS.img_||'1597026405082-eda9beae7513');
-  map.style.backgroundSize=LS.bg.size+'%'; map.style.backgroundPosition=LS.bg.x+'% '+LS.bg.y+'%';
-  map.style.filter='saturate(1.12) contrast(1.04)';
-  if(shade){ shade.style.background='radial-gradient(120% 100% at 50% 40%, rgba(0,0,0,0) 55%, rgba(0,0,0,.28) 100%)'; }
-  poly.innerHTML = patioOutline(anim) + bedSVG(anim);
-  dots.innerHTML='';
-  drawPatio(anim); drawPit(anim); drawPlants(anim); drawLabels(anim);
+  // real aerial of a finished paver-patio yard (overlays trace the real features, added next)
+  map.style.backgroundImage="url('../assets/aerials/patio-yard.jpg')";
+  map.style.backgroundSize=LS.bg.size; map.style.backgroundPosition=LS.bg.pos;
+  map.style.filter='';
+  if(shade){ shade.style.background='radial-gradient(120% 100% at 50% 40%, rgba(0,0,0,0) 62%, rgba(0,0,0,.20) 100%)'; }
+  poly.innerHTML=''; dots.innerHTML=''; lens.innerHTML='';
+  fp.style.display='none'; plants.innerHTML=''; patiofill.style.display='none';
   paintParts();
-  if(anim){ replay.style.animation='ovsettle .5s cubic-bezier(.22,1,.36,1)'; }
 }
 function renderLandscape(){
   tag.textContent=LS.tag; dh2.textContent=LS.h2; dp.textContent=LS.p; matLbl.textContent='In this design';
   spec.innerHTML=LS.spec.map(s=>'<span>'+s+'</span>').join('');
   LSFOCUS=null;
   price.innerHTML=LS.total+' <small>· full design</small>';
-  replay.style.display='inline-flex';
-  renderLS(true);
-  clearTimeout(LS_FIN); LS_FIN=setTimeout(()=>{ if(TRADES[CUR].special) renderLS(false); }, 4300);
+  replay.style.display='none';
+  renderLS(false);
   lucide.createIcons({ attrs:{'stroke-width':1.75} });
 }
 LS.img_='1597026405082-eda9beae7513';
