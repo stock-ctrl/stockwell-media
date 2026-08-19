@@ -35,12 +35,15 @@
   .cbtn svg { width: 19px; height: 19px; stroke: currentColor; }
   .cbtn-primary { background: var(--sw-cream); color: var(--sw-forest); border-color: var(--sw-cream); font-weight: 600; }
   .cbtn-primary svg { stroke: var(--sw-forest); }
+  .cbtn-util { height: 48px; font-size: 15px; color: rgba(244,239,228,0.86); border-color: rgba(244,239,228,0.18); background: rgba(244,239,228,0.04); }
+  .cbtn-util svg { width: 17px; height: 17px; }
   .card-row { display: flex; gap: 11px; }
   .card-row .cbtn { flex: 1; }
 
-  .card-work { margin-top: 26px; display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--sw-sage-light); }
-  .card-work svg { width: 15px; height: 15px; stroke: currentColor; }
-  .card-loc { margin-top: 20px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(244,239,228,0.4); }
+  .card-work { margin-top: 30px; display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 13.5px; letter-spacing: 0.05em; color: var(--sw-cream); padding-bottom: 7px; border-bottom: 1px solid rgba(122,148,110,0.55); transition: border-color var(--dur-base); }
+  .card-work:active { border-bottom-color: var(--sw-sage-light); }
+  .card-work svg { width: 17px; height: 17px; stroke: currentColor; }
+  .card-loc { margin-top: 28px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(244,239,228,0.4); }
 </style>
 </head>
 <body>
@@ -58,21 +61,21 @@
     <span class="card-co">Stockwell Media Co</span>
 
     <h1 class="card-name">Stock Curtis</h1>
-    <p class="card-title">Founder</p>
-    <p class="card-tag">We build the systems businesses run on. Custom software, automation, and private infrastructure.</p>
+    <p class="card-title">Founder &amp; Systems Builder</p>
+    <p class="card-tag">We build the systems businesses run on. Custom software and automation built around how your business actually works.</p>
 
     <div class="card-actions">
-      <a class="cbtn cbtn-primary" href="tel:+18167972739"><span data-lucide="phone"></span> Call</a>
+      <a class="cbtn cbtn-primary" href="website/contact.html"><span data-lucide="zap"></span> Find what you can automate</a>
       <div class="card-row">
-        <a class="cbtn" href="mailto:stockwellmediaco@gmail.com"><span data-lucide="mail"></span> Email</a>
-        <a class="cbtn" href="website/contact.html"><span data-lucide="calendar"></span> Book a call</a>
+        <a class="cbtn cbtn-util" href="tel:+18167972739"><span data-lucide="phone"></span> Call</a>
+        <a class="cbtn cbtn-util" href="mailto:stockwellmediaco@gmail.com"><span data-lucide="mail"></span> Email</a>
       </div>
       <div class="card-row">
         <a class="cbtn" href="stock.vcf" download><span data-lucide="user-plus"></span> Save contact</a>
       </div>
     </div>
 
-    <a class="card-work" href="website/index.html">See our work <span data-lucide="arrow-right"></span></a>
+    <a class="card-work" href="website/index.html">See what we’ve built <span data-lucide="arrow-right"></span></a>
     <div class="card-loc">Springfield, Missouri</div>
   </main>
 
