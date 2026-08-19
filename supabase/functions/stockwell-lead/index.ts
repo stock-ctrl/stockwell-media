@@ -8,8 +8,9 @@
 // field, length caps, and per-IP + global rate limits, because every accepted
 // lead rings Stock's phone.
 //
-// No email is sent here by choice. recipients[].email is still populated so the
-// existing outbox-fallback cron can email the lead IF the M3 never delivers it.
+// Every lead is (a) stored, (b) texted to Stock via the outbox, and (c) emailed
+// to the Stockwell inbox over Gmail SMTP. The email is best-effort: it runs after
+// the lead is safely stored, and its outcome is recorded in email_status.
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
@@ -88,6 +89,95 @@ async function countSince(iso: string, ipHash?: string): Promise<number> {
 function clean(v: unknown, field: string): string {
     if (typeof v !== "string") return "";
     return v.trim().slice(0, MAX_LEN[field] ?? 200);
+}
+
+// ---- Gmail SMTP over TLS, ported from plungehouse-ingest/lib/email.js ----
+// Deno has no net.connect, so this is Deno.connectTls with the same AUTH LOGIN
+// conversation. Credentials come from stockwell_secrets (service-role only),
+// NOT app_state: that table is readable with the publishable key that ships in
+// the public dashboards.
+
+const SMTP_HOST = "smtp.gmail.com";
+const SMTP_PORT = 465;
+const SMTP_TIMEOUT_MS = 20_000;
+
+async function loadSmtpCreds(): Promise<{ user: string; pass: string } | null> {
+    try {
+        const res = await pgrest("stockwell_secrets?select=key,value&key=in.(stockwell_smtp_user,stockwell_smtp_pass)");
+        const rows: Array<{ key: string; value: string }> = await res.json();
+        const user = rows.find((r) => r.key === "stockwell_smtp_user")?.value;
+        const pass = rows.find((r) => r.key === "stockwell_smtp_pass")?.value;
+        return user && pass ? { user, pass } : null;
+    } catch (err) {
+        console.error(`could not load SMTP credentials: ${err?.message ?? err}`);
+        return null;
+    }
+}
+
+async function sendEmail(
+    { to, replyTo, subject, text, user, pass }:
+    { to: string; replyTo?: string; subject: string; text: string; user: string; pass: string },
+): Promise<void> {
+    const conn = await Deno.connectTls({ hostname: SMTP_HOST, port: SMTP_PORT });
+    const enc = new TextEncoder();
+    const dec = new TextDecoder();
+    const buf = new Uint8Array(8192);
+
+    const readReply = async (): Promise<string> => {
+        let out = "";
+        while (true) {
+            const n = await Promise.race([
+                conn.read(buf),
+                new Promise<never>((_, rej) => setTimeout(() => rej(new Error("SMTP read timeout")), SMTP_TIMEOUT_MS)),
+            ]);
+            if (n === null) break;
+            out += dec.decode(buf.subarray(0, n as number));
+            // A reply is complete when its LAST line is "<code> " (space, not dash).
+            const lines = out.split("\r\n").filter(Boolean);
+            const last = lines[lines.length - 1];
+            if (last && /^\d{3} /.test(last)) break;
+        }
+        return out;
+    };
+
+    const cmd = async (line: string | null, expect: number[]): Promise<string> => {
+        if (line !== null) await conn.write(enc.encode(`${line}\r\n`));
+        const reply = await readReply();
+        const lines = reply.split("\r\n").filter(Boolean);
+        const code = Number(lines[lines.length - 1]?.slice(0, 3));
+        if (expect.length && !expect.includes(code)) {
+            throw new Error(`SMTP rejected "${line?.slice(0, 20) ?? "(greeting)"}": ${reply.trim().slice(0, 160)}`);
+        }
+        return reply;
+    };
+
+    try {
+        await cmd(null, [220]);
+        await cmd("EHLO stockwell-lead", [250]);
+        await cmd("AUTH LOGIN", [334]);
+        await cmd(btoa(user), [334]);
+        await cmd(btoa(pass), [235]);
+        await cmd(`MAIL FROM:<${user}>`, [250]);
+        await cmd(`RCPT TO:<${to}>`, [250, 251]);
+        await cmd("DATA", [354]);
+
+        const headers = [
+            `From: Stockwell Website <${user}>`,
+            `To: ${to}`,
+            replyTo ? `Reply-To: ${replyTo}` : "",
+            `Subject: ${subject}`,
+            `Date: ${new Date().toUTCString()}`,
+            "MIME-Version: 1.0",
+            "Content-Type: text/plain; charset=utf-8",
+            "Content-Transfer-Encoding: 8bit",
+        ].filter(Boolean).join("\r\n");
+        // Dot-stuff lines starting with "." per RFC 5321.
+        const body = text.replace(/\r?\n/g, "\r\n").replace(/(^|\r\n)\./g, "$1..");
+        await cmd(`${headers}\r\n\r\n${body}\r\n.`, [250]);
+        await cmd("QUIT", [221]);
+    } finally {
+        try { conn.close(); } catch { /* already closed */ }
+    }
 }
 
 function buildMessage(lead: Record<string, string>): string {
@@ -189,5 +279,35 @@ Deno.serve(async (req: Request) => {
         console.error(`lead #${row.id} saved but alert enqueue failed: ${err?.message ?? err}`);
     }
 
-    return json({ ok: true, id: row.id, alerted: outboxId !== null }, 200, origin);
+    // Email last: the lead is already stored and the text already queued, so a
+    // Gmail outage degrades to "texted but not emailed" rather than a lost lead.
+    let emailStatus = "skipped:no-credentials";
+    try {
+        const creds = await loadSmtpCreds();
+        if (creds) {
+            await sendEmail({
+                to: STOCK_EMAIL,
+                replyTo: lead.email,
+                subject: lead.inquiry_mode === "private"
+                    ? `Private inquiry from ${lead.name}`
+                    : `New lead: ${lead.name}${lead.business ? ` (${lead.business})` : ""}`,
+                text: buildMessage(lead),
+                user: creds.user,
+                pass: creds.pass,
+            });
+            emailStatus = "sent";
+        }
+    } catch (err) {
+        emailStatus = `failed:${String(err?.message ?? err).slice(0, 120)}`;
+        console.error(`lead #${row.id} email failed: ${emailStatus}`);
+    }
+    try {
+        await pgrest(`stockwell_leads?id=eq.${row.id}`, {
+            method: "PATCH",
+            headers: { Prefer: "return=minimal" },
+            body: JSON.stringify({ email_status: emailStatus }),
+        });
+    } catch { /* status is cosmetic; never fail the request over it */ }
+
+    return json({ ok: true, id: row.id, alerted: outboxId !== null, email: emailStatus }, 200, origin);
 });

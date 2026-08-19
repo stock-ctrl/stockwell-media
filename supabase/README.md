@@ -16,11 +16,34 @@ with no cross-project secret to manage.
 3. It enqueues a `plungehouse_outbox` row (`kind = 'stockwell_lead'`)
 4. The M3 poller (`~/outbox-poller`, launchd `com.stockwell.outbox-poller`,
    every 5 min) texts it to Stock and marks the row `sent`
+5. It emails the lead to `stockwellmediaco@gmail.com` over Gmail SMTP, with
+   `Reply-To` set to the prospect so a reply goes straight back to them
 
-No email is sent on the happy path, by choice. `recipients[].email` is still
-populated so the existing outbox-fallback cron in `plungehouse-ingest` emails
-the lead if the M3 never delivers it. Note that cron only runs in the morning
-window, evening, and Sunday, so that safety net is not immediate.
+The email runs LAST and is best effort: the lead is already stored and the text
+already queued, so a Gmail outage degrades to "texted but not emailed" instead
+of a lost lead. The outcome is written to `stockwell_leads.email_status`
+(`sent` | `failed:<reason>` | `skipped:no-credentials`).
+
+`recipients[].email` is also populated so the existing outbox-fallback cron in
+`plungehouse-ingest` emails the lead if the M3 never delivers the text. That
+cron only runs in the morning window, evening, and Sunday, so treat it as a
+backstop rather than a fast safety net.
+
+## SMTP credentials
+
+The sender is ported from `plungehouse-ingest/lib/email.js` (zero dependency
+Gmail SMTP, AUTH LOGIN over TLS on 465) to Deno. It reads two rows from
+`stockwell_secrets`:
+
+    stockwell_smtp_user   ricocurtis.ops@gmail.com
+    stockwell_smtp_pass   that account's Gmail app password
+
+They live there rather than in `app_state` on purpose: `app_state` is readable
+with the publishable key that ships in the public dashboards, so a password in
+it would be world readable. `stockwell_secrets` is RLS-on with no policies.
+
+With the rows absent the function still stores and texts the lead, and records
+`skipped:no-credentials`. Load them with `scripts/load-smtp-secrets.sh`.
 
 ## Redeploying
 
