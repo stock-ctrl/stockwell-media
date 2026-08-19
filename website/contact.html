@@ -7,6 +7,16 @@
 <link rel="icon" href="../assets/logos/favicon.svg"/>
 <link rel="stylesheet" href="../styles.css"/>
 <link rel="stylesheet" href="site.css"/>
+<style>
+  .direct-line { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px 16px; margin-top:18px; padding-top:16px; border-top:1px solid rgba(13,20,16,0.1); font-size:14px; color:rgba(13,20,16,0.55); }
+  .direct-line a { font-weight:500; color:var(--sw-forest); border-bottom:1px solid rgba(90,128,64,0.5); padding-bottom:1px; }
+  .direct-line a:hover { border-bottom-color:var(--sw-forest); }
+  .direct-line--dark { margin-top:16px; padding-top:14px; border-top-color:rgba(244,239,228,0.18); }
+  .direct-line--dark a { color:var(--sw-cream); border-bottom-color:rgba(168,201,148,0.6); }
+  .direct-line--dark a:hover { border-bottom-color:var(--sw-cream); }
+  .contact-item .v a { color:inherit; border-bottom:1px solid rgba(90,128,64,0.45); padding-bottom:1px; }
+  .contact-item .v a:hover { border-bottom-color:var(--sw-forest); }
+</style>
 </head>
 <body>
 
@@ -31,7 +41,7 @@
       <a href="contact.html" class="active">Contact</a>
     </nav>
     <div class="nav-cta">
-      <a href="contact.html" class="btn btn-primary">Book a Call</a>
+      <a href="contact.html" class="btn btn-primary">Let's talk</a>
     </div>
   </div>
 </header>
@@ -40,7 +50,7 @@
 <section class="page-head">
   <div class="container">
     <span class="eyebrow" id="contact-eyebrow">Contact</span>
-    <h1 id="contact-h1">Book a call, or just<br/>get the details.</h1>
+    <h1 id="contact-h1">Let's find what you<br/>can automate.</h1>
     <p id="contact-sub">Tell us a bit about your business and what you're after, we'll get back to you within one business day. No pressure, no hard sell.</p>
   </div>
 </section>
@@ -48,7 +58,7 @@
 <!-- FORM + INFO -->
 <section class="section" style="padding-top:40px;">
   <div class="container contact-grid">
-    <form onsubmit="event.preventDefault(); this.style.display='none'; document.getElementById('sent').style.display='block';">
+    <form id="lead-form">
       <div class="grid grid-2" style="gap:0 18px;">
         <div class="field"><label for="name">Name</label><input id="name" type="text" placeholder="Your name" required/></div>
         <div class="field"><label for="biz">Business</label><input id="biz" type="text" placeholder="e.g. Miller Fencing"/></div>
@@ -71,18 +81,27 @@
         <label for="msg" id="msg-label">What are you hoping to do?</label>
         <textarea id="msg" rows="4" placeholder="e.g. I run a fencing company and want instant quotes on my site…"></textarea>
       </div>
-      <button type="submit" class="btn btn-primary" id="contact-submit" style="width:100%;justify-content:center;">Book my call <span class="arr" data-lucide="arrow-right"></span></button>
-      <p id="contact-fineprint" style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.02em;color:rgba(13,20,16,0.45);margin-top:14px;text-align:center;">We reply within one business day · Springfield, MO</p>
+      <button type="submit" class="btn btn-primary" id="contact-submit" style="width:100%;justify-content:center;">Send it over <span class="arr" data-lucide="arrow-right"></span></button>
+      <p id="contact-fineprint" style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.02em;color:rgba(13,20,16,0.45);margin-top:14px;text-align:center;">Opens your email app with the details filled in · We reply within one business day</p>
+      <div class="direct-line">
+        <span>Or reach us directly</span>
+        <a href="tel:+18167972739">Call (816) 797-2739</a>
+        <a href="mailto:stockwellmediaco@gmail.com">Email us</a>
+      </div>
     </form>
     <div id="sent" style="display:none;background:var(--sw-forest);color:var(--sw-cream);border-radius:var(--r-lg);padding:32px;">
       <div class="eyebrow on-dark" style="margin-bottom:12px;">Got it</div>
       <h3 style="font-family:var(--font-display);font-weight:600;font-size:24px;color:var(--sw-cream);">Thanks, we'll be in touch.</h3>
-      <p style="color:rgba(244,239,228,0.74);margin-top:10px;line-height:1.6;">We'll reach out within one business day to set up your call. (This is a demo form, wire it to your inbox or CRM when you go live.)</p>
+      <p style="color:rgba(244,239,228,0.74);margin-top:10px;line-height:1.6;">Your email app should have opened with everything filled in. Send it and we'll reply within one business day. If nothing opened, reach us directly below.</p>
+      <div class="direct-line direct-line--dark">
+        <a href="tel:+18167972739">Call (816) 797-2739</a>
+        <a href="mailto:stockwellmediaco@gmail.com">stockwellmediaco@gmail.com</a>
+      </div>
     </div>
 
     <aside>
-      <div class="contact-item"><div class="k">Email</div><div class="v">stockwellmediaco@gmail.com</div></div>
-      <div class="contact-item"><div class="k">Phone</div><div class="v">(816) 797-2739</div></div>
+      <div class="contact-item"><div class="k">Email</div><div class="v"><a href="mailto:stockwellmediaco@gmail.com">stockwellmediaco@gmail.com</a></div></div>
+      <div class="contact-item"><div class="k">Phone</div><div class="v"><a href="tel:+18167972739">(816) 797-2739</a></div></div>
       <div class="contact-item"><div class="k">Location</div><div class="v">Springfield, Missouri</div></div>
       <div class="contact-item" style="border-bottom:none;"><div class="k">Private engagements</div><div class="v">NDA &amp; confidentiality, standard</div></div>
       <div class="mock-map" style="margin-top:18px;">
@@ -114,7 +133,7 @@
           </svg>
           <span class="name">STOCKWELL</span>
         </div>
-        <p class="blurb">Instant estimate tools for the trades. Private infrastructure and secure briefings for principals. Springfield, Missouri.</p>
+        <p class="blurb">Custom software and automation, built around how your business actually works. Dashboards and daily briefs for owners, estimate tools for the trades. Springfield, Missouri.</p>
       </div>
       <div>
         <h5>Company</h5>
@@ -126,7 +145,7 @@
       </div>
       <div>
         <h5>Get in touch</h5>
-        <ul><li><a href="contact.html">Book a call</a></li><li><a href="contact.html?inquiry=private">Private inquiry</a></li><li><a href="mailto:stockwellmediaco@gmail.com">stockwellmediaco@gmail.com</a></li></ul>
+        <ul><li><a href="contact.html">Find what you can automate</a></li><li><a href="contact.html?inquiry=private">Private inquiry</a></li><li><a href="mailto:stockwellmediaco@gmail.com">stockwellmediaco@gmail.com</a></li><li><a href="tel:+18167972739">(816) 797-2739</a></li></ul>
       </div>
     </div>
     <div class="footer-bottom">
@@ -139,6 +158,34 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });</script>
 <script>
+  // The form hands the visitor a prefilled email rather than pretending to send.
+  (function () {
+    var form = document.getElementById('lead-form');
+    if (!form) return;
+    var val = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var isPrivate = new URLSearchParams(location.search).get('inquiry') === 'private';
+      var subject = isPrivate
+        ? 'Private inquiry from ' + (val('name') || 'the website')
+        : 'Website inquiry from ' + (val('name') || 'the website') + (val('biz') ? ' (' + val('biz') + ')' : '');
+      var body = [
+        'Name: ' + val('name'),
+        'Business: ' + val('biz'),
+        'Email: ' + val('email'),
+        'Phone: ' + val('phone'),
+        'Needs help with: ' + val('need'),
+        '',
+        val('msg')
+      ].join('\n');
+      window.location.href = 'mailto:stockwellmediaco@gmail.com'
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent(body);
+      form.style.display = 'none';
+      document.getElementById('sent').style.display = 'block';
+    });
+  })();
+
   // Discreet private-inquiry mode, shifts the form's voice for principals.
   (function () {
     var params = new URLSearchParams(location.search);
