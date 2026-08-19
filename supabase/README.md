@@ -43,7 +43,14 @@ with the publishable key that ships in the public dashboards, so a password in
 it would be world readable. `stockwell_secrets` is RLS-on with no policies.
 
 With the rows absent the function still stores and texts the lead, and records
-`skipped:no-credentials`. Load them with `scripts/load-smtp-secrets.sh`.
+`skipped:no-credentials`. Load them with:
+
+    python3 scripts/load-smtp-secrets.py
+
+That script PARSES the plungehouse-ingest `.env` rather than sourcing it: the
+file holds a multi-line service-account private key that breaks `. file` in a
+shell. It never prints the values and refuses to run if the file points at a
+project other than the hub.
 
 ## Redeploying
 
