@@ -64,3 +64,17 @@ sync by hand when the deployed version changes.
 
 RLS is on with no policies, so the anon key can neither read nor write it.
 Verified: anon SELECT returns `[]`, anon INSERT returns 42501.
+
+## Where the site lives now (2026-08-20)
+
+The website moved to its own repo, `stock-ctrl/stock-ctrl.github.io`, so it
+serves from a root URL: **https://stock-ctrl.github.io**. That is the URL to
+hand out and write to NFC cards.
+
+`website/index.html`, `services.html`, `about.html` and `contact.html` in THIS
+repo are now redirect stubs pointing there. Edit the site in the other repo.
+`site.css`, `trades-demo.html` and the `aerial-*.html` pickers stay here, since
+the WIP trades estimator still uses them.
+
+The contact form's origin did not change (both are `https://stock-ctrl.github.io`),
+so the edge function CORS allowlist needed no update.
